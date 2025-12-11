@@ -4,36 +4,49 @@ This devlog documents my progress, thoughts, plans, and debugging steps while co
 
 ---
 
-## 2025-12-10 — Project Setup (Session 1)
-**Thoughts:**  
-Today I started working on Project 2. I reviewed the PDF instructions and the example code provided (`example.pl` and `test.pl`). The project requires implementing `find_exit/2`, which must validate a maze, check a given movement sequence, or generate one.
+## 2025-12-10 18:24:00 — Project Initialization
 
-**Plan for this session:**  
-- Create GitHub repository and clone it using GitHub Desktop  
-- Set up project folder structure in Cursor  
-- Add project files: `project2.pl`, `example.pl`, `test.pl`, `README.md`, and this devlog  
-- Begin writing basic helper predicates for maze validation  
+**What I know about the project:**
 
-**Work done:**  
-- Created new GitHub repo and committed initial structure  
-- Added the provided map and generator code into `example.pl` and `test.pl`  
-- Wrote helper predicates: `count_cells/3`, `rectangular/2`, `all_cells_valid/1`  
+This project requires implementing a Prolog program that can solve mazes. The main predicate is `find_exit/2`, which takes a maze representation and either:
+- Verifies a given sequence of actions (when Actions is bound)
+- Generates a sequence of actions to solve the maze (when Actions is unbound)
 
----
+The maze is represented as a list of rows, where each row is a list of cells. Valid cell types are:
+- `w` - wall (cannot be traversed)
+- `f` - floor (empty space, can be traversed)  
+- `s` - start position (exactly one required)
+- `e` - exit position (at least one required)
 
-## 2025-12-10 — Implementing Maze Validation (Session 2)
-**Thoughts:**  
-The assignment requires rejecting invalid mazes (`bad_map`, `bad_map2`, etc.). I needed to confirm exactly what makes a maze valid.
+Actions are: `up`, `down`, `left`, `right`, which move the current position accordingly.
 
-**Plan:**  
-- Implement `valid_maze/1`  
-- Ensure the maze is rectangular  
-- Ensure it has exactly one `s` and at least one `e`  
-- Ensure all symbols are from {w,f,s,e}  
+The project includes:
+- `example.pl` - Contains example mazes and a `display_map/1` predicate for visualization
+- `test.pl` - Contains `gen_map/4` for generating random mazes for testing
 
-**Work done:**  
-- Completed `valid_maze/1`  
-- Implemented rectangular checks and cell validity checks  
-- Tested with:
-  ```prolog
-  ?- bad_map(M), valid_maze(M).  % should fail
+**Overall planning:**
+
+1. **Maze Validation**: Implement validation to ensure mazes are:
+   - Rectangular (all rows same length)
+   - Have exactly one start (`s`)
+   - Have at least one exit (`e`)
+   - Contain only valid cell types
+
+2. **Path Verification**: When Actions is bound, verify that:
+   - The path starts at the start position
+   - Each action is valid (doesn't go out of bounds or into walls)
+   - The path ends at an exit
+
+3. **Path Generation**: When Actions is unbound, use a search algorithm (likely DFS) to:
+   - Find a path from start to exit
+   - Avoid revisiting cells (prevent cycles)
+   - Return the sequence of actions
+
+4. **Testing**: Test with:
+   - Simple example mazes from `example.pl`
+   - Invalid mazes to ensure proper rejection
+   - Randomly generated mazes from `test.pl`
+
+5. **Documentation**: Create a comprehensive README.md explaining usage and examples.
+
+I'm planning to use Prolog's natural backtracking mechanism for the path generation, which should make the implementation elegant. The key challenge will be tracking visited cells to avoid infinite loops in the search.
